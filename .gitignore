@@ -168,3 +168,5 @@ project/datasets
 project/datasets/*
 ehr
 archive
+mlflow/
+prometheus/
