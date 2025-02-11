@@ -170,3 +170,6 @@ ehr
 archive
 mlflow/
 prometheus/
+**config
+project/config*
+project/config/*

@@ -10,13 +10,24 @@
 # message.line_chart(data=df, x="step",y="train_loss")
 
 import streamlit as st
-from openai import OpenAI, api_key
+from openai import OpenAI
 import os
 import random
 import time
+import json
+
+
+
+# get api key from file
+with open("../../../apikeys/openai-keys.json", "r") as key_file:
+    api_key = json.load(key_file)["default_api_key"]
+os.environ["OPENAI_API_KEY"] = api_key
+
+# get model names from config
+with open("./config/config.json", "r") as config_file:
+    config = json.load(config_file)
 
 st.title("SerenityBot - Your Mental Heath Virtual Assistant")
-os.environ["OPENAI_API_KEY"] = api_key
 client = OpenAI()
 
 # Streamed response emulator
@@ -34,7 +45,7 @@ def response_generator():
 
 # Set a default model
 if "openai_model" not in st.session_state:
-    st.session_state["openai_model"] = "gpt-4o-mini"
+    st.session_state["openai_model"] = config["fine-tuned-model"]
 
 # Initialize chat history
 if "messages" not in st.session_state:
@@ -56,12 +67,15 @@ if prompt := st.chat_input("How can I help you to feel better?"):
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
         # response = st.write_stream(response_generator())
+        for m in st.session_state.messages:
+            messages = [
+                {"role": "system", "content": "You are an assistant that helps answer mental health question."},
+                {"role": m["role"], "content": m["content"]}
+
+            ]
         stream = client.chat.completions.create(
             model=st.session_state["openai_model"],
-            messages=[
-                {"role": m["role"], "content": m["content"]}
-                for m in st.session_state.messages
-            ],
+            messages=messages,
             stream=True,
         )
         response = st.write_stream(stream)
