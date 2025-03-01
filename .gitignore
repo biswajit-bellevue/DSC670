@@ -162,11 +162,13 @@ cython_debug/
 .idea/
 .DS_Store
 **.DS_Store
-vector-stores
+**vector-stores
+**pdf*
+**archive*
+**text*
 results*
 project/datasets
 project/datasets/*
-ehr
 archive
 mlflow/
 prometheus/
